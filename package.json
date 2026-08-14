@@ -1,0 +1,22 @@
+{
+  "name": "devtinder",
+  "version": "1.0.0",
+  "description": "tinder for dev",
+  "keywords": [
+    "nodejs",
+    "javascript"
+  ],
+  "license": "ISC",
+  "author": "Affan Ahmad Mir",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+"dev": "nodemon src/app.js",
+"start": "node src/app.js",
+"a":"nodemon src/app.js"
+  },
+  "dependencies": {
+    "express": "^5.2.1",
+    "nodemon": "^3.1.14"
+  }
+}
