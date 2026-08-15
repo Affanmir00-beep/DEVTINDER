@@ -1,7 +1,7 @@
 const express=require('express');
 //const app=express(); it mrans we are creatin our node application this is instance of express js application. we are basically creating a new web server using express js framework. we can use this app variable to create routes, middleware, and other functionalities of our web application. we have to call listen on this app variable to start the server and listen for incoming requests on a specific port.
 const app=express();
-const { authmiddleware ,userauth}=require("./middlewares/auth.js");
+// const { authmiddleware ,userauth}=require("./middlewares/auth.js");
 // const {userauth}=require("./middlewares/auth.js");
 // this function is known as req handler function. it takes two parameters req and res. req is the request object that contains information about the incoming request, such as the HTTP method, headers, and body. res is the response object that we can use to send a response back to the client. in this case we are sending a simple text response "hello from the server" using the send method of the response object.
 //  wehn  we do this and open localhost:3000 in the browser we will see hello from the server printed on the screen. this is basically responding to that incoming request. this is because our server is listening for incoming requests on port 3000 and when we make a request to that port, our req handler function is executed and sends the response back to the client.
@@ -101,21 +101,49 @@ const { authmiddleware ,userauth}=require("./middlewares/auth.js");
 //     next();
 // }); 
 // we use app.use middlewear so every get put post patch deldete request go through this.
-app.use("/admin",authmiddleware); 
-// app.use("/user",userauth);
-app.get("/user",userauth,(req,res)=>{
-    res.send("hello from the user route");
+// app.use("/admin",authmiddleware); 
+// // app.use("/user",userauth);
+// app.get("/user",userauth,(req,res)=>{
+//     res.send("hello from the user route");
+// });
+// // middleware willnot run for this route because we have not specified the route /admin in the middleware. so this route will be executed without going through the middleware. so if we go to /user it will show hello from the user route but if we go to /admin/getalldata it will first go through the middleware and then it will execute the req handler function.
+// app.get("/admin/getalldata",(req,res)=>{
+//     // frist we have to check if request is authenticated or not.
+//     // logic fo checking if the request is authorized or not. if it is authorized then we will send the data otherwise we will send an error message.
+// res.send("All data sent");
+// });
+// app.get("/admin/deleteuser",(req,res)=>{
+//     // res.send("User deleted");
+//  res.send("User deleted");
+// });
+
+
+
+// try catch
+
+
+
+app.use("/",(err,req,res,next)=>{
+  if(err){
+    res.status(500).send("Something went wrong!");
+}
 });
-// middleware willnot run for this route because we have not specified the route /admin in the middleware. so this route will be executed without going through the middleware. so if we go to /user it will show hello from the user route but if we go to /admin/getalldata it will first go through the middleware and then it will execute the req handler function.
-app.get("/admin/getalldata",(req,res)=>{
-    // frist we have to check if request is authenticated or not.
-    // logic fo checking if the request is authorized or not. if it is authorized then we will send the data otherwise we will send an error message.
-res.send("All data sent");
+
+app.get("/user",(req,res)=>{
+  try{
+// res.send("hello from the user route");
+throw new Error("error");
+  }
+  catch(err){
+    res.status(500).send("Something went wrong! please contact team support");
+  }
 });
-app.get("/admin/deleteuser",(req,res)=>{
-    // res.send("User deleted");
- res.send("User deleted");
+app.use("/",(err,req,res,next)=>{
+  if(err){
+    res.status(500).send("Something went wrong!");
+}
 });
+
 app.listen(3000,()=>{
     console.log("server is runnning on port 3000");
     //this will only be printed when mys server is started successfully
