@@ -8,20 +8,14 @@ const User = require("./models/user");
 
 
 
+app.use(express.json());
 
+app.post("/signup",async(req,res)=>{
 
-app.post("/signup",  async(req,res)=>{
+   
+    // in this we a re trying to figure out can we console log our req
     // Handle signup logic here
-    const user =new User({
-        firstname:"hamza",
-        lastname:"sajid",
-        age:"22",
-        emailid:"xyz@emial.com",
-        password:"affan",
-        gender:"male"
-    });
-  
-
+    const user =new User(req.body);
     try{
           // new user is an instance of our user model.  
      await user.save();
@@ -32,6 +26,8 @@ app.post("/signup",  async(req,res)=>{
     catch(err){
 res.status(400).send("bad request");
     }
+// }
+      res.send("data has been sent")
 });
 
 connectDB().then(()=>{ 
