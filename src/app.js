@@ -30,17 +30,20 @@ res.status(400).send("bad request");
 });
 
 
+
+
 // api to find one user by email
 app.get("/user", async (req, res) => {
 
+
     // const useremail=req.body.emailid;
-  
+//   const Age=req.body.age;
     try{
         const user= await User.findOne({age:22});
      
         if(!user){
             res.send("user dont exist")
-        }
+        } 
         else{
    res.send(user);
         }
@@ -76,6 +79,29 @@ app.get("/feed", async(req,res)=>{
         res.status(404).send(err,"err is happeninging")
     }
 });
+
+
+
+app.delete("/user",async(req,res)=>{
+
+
+     const userId=req.body.userId;
+
+    try{
+        // const userid=await User.findByIdAndDelete(_id:userId);
+        // (_id:userId)  = (userId) wrriiten in mongoose because in mongoose we have to pass the id of the user to delete the user from database. and in our case we are passing the userId from the request body. so we have to pass the userId to findByIdAndDelete method. and in mongoose we have to pass the id of the user to delete the user from database. and in our case we are passing the userId from the request body. so we have to pass the userId to findByIdAndDelete method.
+        //   const user=await User.findByIdAndDelete(userId);
+          const user=await User.findByIdAndDelete({_id:userId});
+        res.send("user deleted successfully");
+        console.log(user,"user deleted successfully");
+    }
+  catch(err){
+    console.log(err);
+    res.status(404).send("error deleting user",err);
+  }
+
+})
+
 connectDB().then(()=>{ 
     console.log("connected to the database");
 app.listen(3000,()=>{
@@ -85,6 +111,8 @@ app.listen(3000,()=>{
 ).catch(err=>{
     console.log("error connecting to the database",err);
 }   );
+
+console.log("Connected state:", User.db.readyState);
 
 
 
