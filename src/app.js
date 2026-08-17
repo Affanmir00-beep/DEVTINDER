@@ -100,7 +100,26 @@ app.delete("/user",async(req,res)=>{
     res.status(404).send("error deleting user",err);
   }
 
+});
+
+app.patch("/user", async(req,res)=>{
+
+
+    // const userId=req.body.userId;
+    const useeremail=req.body.emailid;
+    const updatedata=req.body;
+    // const{ usreid,..updateddata}=req.body;
+    try{
+     const updateddata= await User.findOneAndUpdate({emailid:useeremail},updatedata,{returnDocument:"before"},);
+     res.send("user updated successfully");
+     console.log(updateddata,"user updated successfully");
+    }
+    catch(err){
+        res.status(400).send("error while updating  user")
+        console.log(err);
+    }
 })
+
 
 connectDB().then(()=>{ 
     console.log("connected to the database");

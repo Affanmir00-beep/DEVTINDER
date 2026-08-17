@@ -1,0 +1,12 @@
+$kind: http-request
+url: http://localhost:3000/user
+method: DELETE
+body:
+  type: json
+  content: "{\r
+
+    \    \"userId\":\"6a81cee827ed59b2592c599e\"\r
+
+    }"
+settings: {}
+order: 4000
