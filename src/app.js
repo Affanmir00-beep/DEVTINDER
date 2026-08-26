@@ -4,34 +4,45 @@ const express=require("express");
 const app=express();
 const connectDB=require("./config/database");
 const User = require("./models/user");
+const { vlaidatesignupdata } = require("./utils/validations.js");
+const bcrypt=require('bcrypt')
 
 
 
-
-
-app.use(express.json());
+app.use(express.json()); 
 
 app.post("/signup",async(req,res)=>{
 
+  
    
-    // in this we a re trying to figure out can we console log our req
-    // Handle signup logic here
-    const user =new User(req.body);
     try{
+// validation of data
+    vlaidatesignupdata(req);
+         // in this we a re trying to figure out can we console log our req
+    // Handle signup logic here
+    // now wea re going to encrupt passsword then we gonna save it to db
+ const {password,firstname,lastname,emailid,age,gender}=req.body;
+ const passwordHash= await bcrypt.hash(password,10);
+ console.log(passwordHash);
+ 
+    const user =new User({
+        firstname,
+        lastname,
+        emailid,
+        password:passwordHash,
+        age,
+        gender
+    }); 
           // new user is an instance of our user model.  
      await user.save();
     //  user .save() save data to database.
     res.send("user added successfully");
-    console.log("user")
+    // console.log("user")
     }
     catch(err){
-res.status(400).send("bad request");
+res.status(400).send(err.message)
     }
 });
-
-
-
-
 // api to find one user by email
 app.get("/user", async (req, res) => {
 
@@ -42,6 +53,7 @@ app.get("/user", async (req, res) => {
         const user= await User.findOne({age:22});
      
         if(!user){
+            
             res.send("user dont exist")
         } 
         else{
@@ -79,9 +91,6 @@ app.get("/feed", async(req,res)=>{
         res.status(404).send(err,"err is happeninging")
     }
 });
-
-
-
 app.delete("/user",async(req,res)=>{
 
 
@@ -109,18 +118,32 @@ app.patch("/user", async(req,res)=>{
     const useeremail=req.body.emailid;
     const updatedata=req.body;
     // const{ usreid,..updateddata}=req.body;
+
+
     try{
-     const updateddata= await User.findOneAndUpdate({emailid:useeremail},updatedata,{returnDocument:"before"},);
+const Allowed_updates=[
+        "photourl","skills","about","age"
+    ];
+    const isupdateallowed=Object.keys(updatedata).every(k=>Allowed_updates.includes(k));
+  if (!isupdateallowed) {
+  throw new Error("cant update this info");
+}
+    //  const updateddata= await User.findOneAndUpdate({emailid:useeremail},updatedata,{returnDocument:"before", runValidators: true },);
+    const updateduser = await User.findByIdAndUpdate(
+  userid,
+  updatedata,
+  {
+    new: true,
+    runValidators: true,
+  });
      res.send("user updated successfully");
      console.log(updateddata,"user updated successfully");
     }
     catch(err){
-        res.status(400).send("error while updating  user")
+        res.status(400).send("error while updating  user"   +err.message)
         console.log(err);
     }
-})
-
-
+});
 connectDB().then(()=>{ 
     console.log("connected to the database");
 app.listen(3000,()=>{
