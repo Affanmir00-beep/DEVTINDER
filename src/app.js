@@ -6,15 +6,14 @@ const connectDB=require("./config/database");
 const User = require("./models/user");
 const { vlaidatesignupdata } = require("./utils/validations.js");
 const bcrypt=require('bcrypt')
-
+const cookieparser=require('cookie-parser')
+const jwt=require('jsonwebtoken')
 
 
 app.use(express.json()); 
+app.use(cookieparser());
 
 app.post("/signup",async(req,res)=>{
-
-  
-   
     try{
 // validation of data
     vlaidatesignupdata(req);
@@ -44,8 +43,6 @@ res.status(400).send(err.message)
 });
 // NOW  WEA RE CREATING LOGIN API
 app.post("/login", async(req,res)=>{
-
-
     try{
 const {emailid,password}=req.body;
 
@@ -54,8 +51,12 @@ const {emailid,password}=req.body;
     throw new Error("INVALID CREDENTIALS");
  }
 const ispasswordcorrect = await bcrypt.compare(password, user.password);
-
 if(ispasswordcorrect){
+    // create a jwt token
+    const token= await jwt.sign({_id:user._id},"Aff@n123&")
+    console.log(token);
+    //  add jwt token to cookie and send the response back tot the user
+    res.cookie("token", token);
     res.send("login successfull");
 }
 else{
@@ -65,10 +66,35 @@ else{
     catch(err){
     res.status(400).send(err.message)
     }
+});
+// get api to fetch  profile and suthenticate how cookie trvael with every req
+app.get("/profile", async(req,res)=>{
+try{
+        const cookies=req.cookies;
+    // console.log(cookies);
+    const {token}=cookies;
+    if(!token){
+        throw new Error("invalid token");
+    }
+ const decodedmsg=await jwt.verify(token,"Aff@n123&");
+
+ const {_id}=decodedmsg;
+
+//  console.log("logged user is"+ _id);
+
+ const loggedinuser=await User.findById(_id);
+ if(!loggedinuser){
+    throw new Error("user doesnot exist")
+ }
+ res.send(loggedinuser);
+//  console.log(decodedmsg);
+} 
+catch(err){
+res.status(400).send(err.message)
+}
 })
 // api to find one user by email
 app.get("/user", async (req, res) => {
-
 
     // const useremail=req.body.emailid;
 //   const Age=req.body.age;
