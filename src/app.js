@@ -24,7 +24,6 @@ app.post("/signup",async(req,res)=>{
  const {password,firstname,lastname,emailid,age,gender}=req.body;
  const passwordHash= await bcrypt.hash(password,10);
  console.log(passwordHash);
- 
     const user =new User({
         firstname,
         lastname,
@@ -43,6 +42,30 @@ app.post("/signup",async(req,res)=>{
 res.status(400).send(err.message)
     }
 });
+// NOW  WEA RE CREATING LOGIN API
+app.post("/login", async(req,res)=>{
+
+
+    try{
+const {emailid,password}=req.body;
+
+ const user = await User.findOne({emailid});
+ if (!user){
+    throw new Error("INVALID CREDENTIALS");
+ }
+const ispasswordcorrect = await bcrypt.compare(password, user.password);
+
+if(ispasswordcorrect){
+    res.send("login successfull");
+}
+else{
+    throw new Error("INAVLAID CREDENTIALS");
+}
+    }
+    catch(err){
+    res.status(400).send(err.message)
+    }
+})
 // api to find one user by email
 app.get("/user", async (req, res) => {
 
