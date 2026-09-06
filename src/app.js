@@ -45,16 +45,14 @@ res.status(400).send(err.message)
 app.post("/login", async(req,res)=>{
     try{
 const {emailid,password}=req.body;
-
  const user = await User.findOne({emailid});
  if (!user){
     throw new Error("INVALID CREDENTIALS");
  }
-const ispasswordcorrect = await bcrypt.compare(password, user.password);
+const ispasswordcorrect = await user.validatepass(password);
 if(ispasswordcorrect){
     // create a jwt token
-    const token= await jwt.sign({_id:user._id},"Aff@n123&",{expiresIn:"1d"});
-    console.log(token);
+const token=user.getjwt();  
     //  add jwt token to cookie and send the response back tot the user
     res.cookie("token", token, {
         expires: new Date(Date.now() + 24 * 60 * 60 * 1000),

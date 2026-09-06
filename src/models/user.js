@@ -79,5 +79,20 @@ const userSchema = new mongoose.Schema({
 },{
     timestamps:true
 });
+// now we are creating helper methods /handler methods to offload a lot of things we dont have to write creating a wt token in app.js file and also we dont have to write the logic of finding the user in the database in app.js file. we can write it here in user model file and then we can call it in app.js file. so that we can offload a lot of things from app.js file and keep it clean and readable. so we are creating a method called generateAuthToken which will generate a jwt token for the user and return it. and we are creating another method called findByCredentials which will find the user in the database by emailid and password and return the user object. so that we can use it in app.js file to login the user.
+// just like we offload validation using validator .js and use it in app.js file
+// we dont gonnna use arrow functioin  here bcz it gonna break things( we gonna use normal function bcz we want to use this keyword here and this keyword is not available in arrow function)
+ userSchema.methods.getjwt= async function(){
+    const user=this;
+   const token= await jwt.sign({_id:user._id},"Aff@n123&",{expiresIn:"1d"});
+return token;
+ }
+
+ userSchema.methods.validatepass= async function(passwordinputbyuser){
+    const user=this;
+    const passwordhash=user.password;
+    const ispasswprdvalid= await bcrypt.compare(passwordinputbyuser, passwordhash);
+    return ispasswprdvalid;
+ }
 module.exports = mongoose.model("user", userSchema);
 
