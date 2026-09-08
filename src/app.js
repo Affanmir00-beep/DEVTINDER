@@ -4,89 +4,20 @@ const express=require("express");
 const app=express();
 const connectDB=require("./config/database");
 const User = require("./models/user");
-const { vlaidatesignupdata } = require("./utils/validations.js");
-const bcrypt=require('bcrypt');
 const cookieparser=require('cookie-parser');
 const jwt=require('jsonwebtoken');
-const {userauth}=require("./middlewares/auth.js");
+
 
 app.use(express.json()); 
 app.use(cookieparser());
 
-app.post("/signup",async(req,res)=>{
-    try{
-// validation of data
-    vlaidatesignupdata(req);
-         // in this we a re trying to figure out can we console log our req
-    // Handle signup logic here
-    // now wea re going to encrupt passsword then we gonna save it to db
- const {password,firstname,lastname,emailid,age,gender}=req.body;
- const passwordHash= await bcrypt.hash(password,10);
- console.log(passwordHash);
-    const user =new User({
-        firstname,
-        lastname,
-        emailid,
-        password:passwordHash,
-        age,
-        gender
-    }); 
-          // new user is an instance of our user model.  
-     await user.save();
-    //  user .save() save data to database.
-    res.send("user added successfully");
-    // console.log("user")
-    }
-    catch(err){
-res.status(400).send(err.message)
-    }
-});
-// NOW  WE  ARE CREATING LOGIN API
-app.post("/login", async(req,res)=>{
-    try{
-const {emailid,password}=req.body;
- const user = await User.findOne({emailid});
- if (!user){
-    throw new Error("INVALID CREDENTIALS");
- }
-const ispasswordcorrect = await user.validatepass(password);
-if(ispasswordcorrect){
-    // create a jwt token
-const token=user.getjwt();  
-    //  add jwt token to cookie and send the response back tot the user
-    res.cookie("token", token, {
-        expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
-        // httpOnly: true
-    });
-    res.send("login successfull");
-}
-else{
-    throw new Error("INAVLAID CREDENTIALS");
-}
-    }
-    catch(err){
-    res.status(400).send(err.message)
-    }
-});
-app.post("/sendconnectionrequest",userauth,async(req,res)=>{
+const authrouter=require("./routes/auth.js");
+const profilerouter=require("./routes/profile.js");
+const requestrouter=require("./routes/request.js");
 
-    const user=req.user;
-    console.log("sendin connection request");
-    res.send(user.firstname+" is sending connection request to "+req.body.to);
-})
-
-
-
-
-
-
-
-
-
-
-
-
-
+app.use("/",authrouter);
+app.use("/",profilerouter);
+app.use("/",requestrouter); 
 
 connectDB().then(()=>{ 
     console.log("connected to the database");
@@ -202,32 +133,6 @@ console.log("Connected state:", User.db.readyState);
 //     }
 // });
 // get api to fetch  profile and suthenticate how cookie trvael with every req
-// app.get("/profile", userauth, async(req,res)=>{
-// try{
-// //         const cookies=req.cookies;
-// //     // console.log(cookies);
-// //     const {token}=cookies;
-// //     if(!token){
-// //         throw new Error("invalid token");
-// //     }
-// //  const decodedmsg=await jwt.verify(token,"Aff@n123&");
 
-// //  const {_id}=decodedmsg;
-
-// // //  console.log("logged user is"+ _id);
-
-// //  const loggedinuser=await User.findById(_id);
-// const loggedinuser=req.user;
-// // req.user is set in the userauth middleware after verifying the token and fetching the user from the database.
-//  if(!loggedinuser){
-//     throw new Error("user doesnot exist")
-//  }
-//  res.send(loggedinuser);
-// //  console.log(decodedmsg);
-// } 
-// catch(err){
-// res.status(400).send(err.message)
-// }
-// })
 // // api to find one user by email
 // }
