@@ -1,0 +1,23 @@
+$kind: http-request
+name: profile/edit
+description: ""
+url: http://localhost:3000/profile/edit
+method: PATCH
+body:
+  type: json
+  content: "{\r
+
+    \    \"age\":\"35\",\r
+
+    \    \"gender\":\"female\",\r
+
+    \    \"skills\":[\"edit,backend\",\"frontend\",\"apis\"],\r
+
+    \    \"about\":\"hey affn here i ma a bak=ckend dev\",\r
+
+    \    \"photourl\":\"\"\r
+
+    \r
+
+    }"
+order: 8000

@@ -16,6 +16,14 @@
         throw new Error("password is not strong")
     }
  }
+ const vlaidateprofiledata=(req)=>{
+    const allowededitfields=["firstname","lastname","age","gender","height","photourl","skills","about"];
+    const isvalidoperation=Object.keys(req.body).every((field)=>allowededitfields.includes(field));
+    return isvalidoperation;
+ }
+ const validateEmail=(emailid)=>validator.isEmail(emailid);
  module.exports={
-    vlaidatesignupdata
+    vlaidatesignupdata,
+    vlaidateprofiledata,
+    validateEmail
  }

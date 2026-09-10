@@ -1,0 +1,12 @@
+$kind: http-request
+name: /request/send/:status/:touserid
+description: ""
+url: http://localhost:3000/request/send/:status/:touserid
+method: POST
+pathVariables:
+  status: intrested
+  touserid: 6a9fdc0c9f9b1686e6f87184
+body:
+  type: json
+  content: ""
+order: 11000

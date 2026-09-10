@@ -48,7 +48,7 @@ const {emailid,password}=req.body;
 const ispasswordcorrect = await user.validatepass(password);
 if(ispasswordcorrect){
     // create a jwt token
-const token=user.getjwt();  
+const token= await user.getjwt();  
     //  add jwt token to cookie and send the response back tot the user
     res.cookie("token", token, {
         expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
@@ -64,7 +64,16 @@ else{
     res.status(400).send(err.message)
     }
 });
+authrouter.post("/logout",async (req,res)=>{
 
+    // res.clearCookie("token", { path: "/" });
+    // res.send("logout successfull");
+
+    res.cookie("token",null,{
+        expires: new Date(Date.now()),
+    }).send("logout successfull");
+
+})
 
 module.exports=authrouter; ;
 
