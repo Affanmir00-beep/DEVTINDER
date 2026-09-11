@@ -4,6 +4,8 @@ const mongoose=require('mongoose');
 const connectionrequestschema=new mongoose.Schema({
      fromuserid:{ 
         type:mongoose.Schema.Types.ObjectId, 
+        ref:"user",
+        // here we are doing what we are talking about in user.js line 15
         required:true
      },
      touserid:{

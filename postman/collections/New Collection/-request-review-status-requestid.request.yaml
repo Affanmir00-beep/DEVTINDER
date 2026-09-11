@@ -1,5 +1,5 @@
 $kind: http-request
-name: http://localhost:3000/request/review/:status/:requestid
+name: /request/review/:status/:requestid
 url: http://localhost:3000/request/review/:status/:requestid
 method: POST
 pathVariables:
