@@ -1,6 +1,10 @@
 $kind: http-request
-url: http://localhost:3000/signup
+name: http://localhost:3000/request/review/:status/:requestid
+url: http://localhost:3000/request/review/:status/:requestid
 method: POST
+pathVariables:
+  status: accepted
+  requestid: 6a8f4703bfa507a8b393110e
 body:
   type: json
   content: "{\r

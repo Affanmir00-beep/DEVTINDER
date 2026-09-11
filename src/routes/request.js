@@ -50,4 +50,41 @@ catch(err){
     res.status(400).send(err.message);
 }
 });
+requestrouter.post("/request/review/:status/:requestid",userauth,async(req,res)=>{
+  try{
+    const loggineuser=req.user;
+// The logged-in user must be the receiver of the connection request.
+// We validate the status and request ID before updating the request.
+// The status can be "accepted", "rejected", or "ignored".
+// If the request exists and belongs to the logged-in user, we update its status.
+const {status,requestid}=req.params;
+const allowedstatus=["accepted","rejected"];
+if(!allowedstatus.includes(status)){
+    return res.status(400).json({
+        message:"staus should be valid"
+    })
+}
+const connectionRequest = await Connectionrequest.findOne({
+    _id:requestid,
+    touserid:loggineuser._id,
+    status:"intrested"
+})
+if(!connectionRequest){
+    return res.status(404).json({
+        message:"connection request  not found"
+    })
+
+}
+connectionRequest.status=status;
+const data=await connectionRequest.save();
+res.json({
+    message:"connection request"+status,
+    data
+})
+
+
+  } catch(err){
+    res.status(400).send(err.message)
+  }
+})
 module.exports=requestrouter;
